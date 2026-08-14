@@ -10,6 +10,13 @@
 
 **Migration Risk Reviewer: Prioriza operación segura y despliegue expand-contract sobre estilo SQL.**
 
+## Estado de producción (post-implementación)
+
+- **Demo:** https://migration-risk-reviewer.pages.dev (el subdominio `https://migration-risk-reviewer.alexcuesta.dev` quedará activo cuando el orquestador del portafolio adjunte el registro DNS).
+- **Repositorio:** https://github.com/Aredex/migration-risk-reviewer, tag `v1.0.0`.
+- **CI:** GitHub Actions (`quality` + `e2e`) en verde en el push a `main` (lint, typecheck, 77 pruebas unitarias/contrato, build, y 4 pruebas E2E Playwright incluyendo axe).
+- **Sustituto de las "cinco pruebas observadas":** no hubo usuarios humanos disponibles durante el desarrollo (playbook de portafolio, sección 0). En su lugar, `e2e/happy-path.spec.ts` recorre el camino feliz de 30/90 s completo (ejecutar el fixture por defecto, abrir un hallazgo, revisar el plan expand-contract, cambiar de escenario a un caso límite con un hallazgo crítico, y exportar el informe JSON), `e2e/adversarial.spec.ts` cubre el fixture adversarial (SQL con comentarios/comillas/dollar-quoting hostiles que nunca se ejecuta) y el fixture de entrada vacía (error tipado recuperable), y `e2e/accessibility.spec.ts` verifica con `@axe-core/playwright` la ausencia de violaciones críticas/serias. Los cuatro pasaron en CI. Esto documenta comportamiento verificado automáticamente; no sustituye observación humana real y no se presenta como tal.
+
 ## Caso de estudio
 
 1. Problema: migraciones aparentemente simples pueden bloquear escrituras, reescribir tablas o romper despliegues compatibles.
