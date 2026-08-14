@@ -1,0 +1,33 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# tsc build info
+node_modules/.tmp
+*.tsbuildinfo
+
+# logs
+npm-debug.log*
+pnpm-debug.log*
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# env
+.env
+.env.*
+!.env.example
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# coverage
+/coverage
+
+.DS_Store
