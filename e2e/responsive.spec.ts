@@ -3,13 +3,53 @@ import { expect, test, type Page } from '@playwright/test'
 type DocumentDimensions = {
   clientWidth: number
   scrollWidth: number
+  overflowElements: Array<{
+    selector: string
+    text: string
+    left: number
+    right: number
+    width: number
+    clientWidth: number
+    scrollWidth: number
+    display: string
+    fontFamily: string
+    fontSize: string
+    minWidth: string
+    whiteSpace: string
+  }>
 }
 
 async function documentDimensions(page: Page) {
-  return page.evaluate<DocumentDimensions>(() => ({
-    clientWidth: document.documentElement.clientWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-  }))
+  return page.evaluate<DocumentDimensions>(() => {
+    const clientWidth = document.documentElement.clientWidth
+    const overflowElements = Array.from(document.body.querySelectorAll<HTMLElement>('*'))
+      .map((element) => {
+        const bounds = element.getBoundingClientRect()
+        const styles = getComputedStyle(element)
+
+        return {
+          selector: [element.tagName.toLowerCase(), ...Array.from(element.classList)].join('.'),
+          text: element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 80) ?? '',
+          left: bounds.left,
+          right: bounds.right,
+          width: bounds.width,
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+          display: styles.display,
+          fontFamily: styles.fontFamily,
+          fontSize: styles.fontSize,
+          minWidth: styles.minWidth,
+          whiteSpace: styles.whiteSpace,
+        }
+      })
+      .filter(({ right, width }) => width > 0 && right > clientWidth)
+
+    return {
+      clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      overflowElements,
+    }
+  })
 }
 
 test.describe('Responsive layout', () => {
